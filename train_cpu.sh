@@ -11,6 +11,7 @@ game_path=$PWD"/roms/"
 env_params="useRGB=true"
 steps=5000000 # Total steps to run the model. 50M for Atari.
 save_freq=100000 # Save every save_freq steps. Save early and often! 125k for Atari.
+save_versions=100000
 
 # PREPROCESSOR OPTIONS
 preproc_net="\"net_downsample_2x_full_y\""
@@ -66,7 +67,7 @@ pool_frms="type="$pool_frms_type",size="$pool_frms_size
 
 agent_params="lr="$lr",ep="$ep",ep_end="$eps_end",ep_endt="$eps_endt",discount="$discount",hist_len="$hist_len",learn_start="$learn_start",replay_memory="$replay_memory",update_freq="$update_freq",n_replay="$n_replay",network="$netfile",preproc="$preproc_net",state_dim="$state_dim",minibatch_size=32,ncols="$ncols",bufferSize=1024,valid_size=1000,target_q="$target_q",clip_delta="$clip_delta"",min_reward="$min_reward",max_reward="$max_reward",rescale_r="$rescale_r",nonEventProb="$nonEventProb" 
 
-args="-framework $FRAMEWORK -game_path $game_path -name $agent_name -env $ENV -env_params $env_params -agent $agent -agent_params $agent_params -steps $steps -eval_freq $eval_freq -eval_steps $eval_steps -prog_freq $prog_freq -save_freq $save_freq -actrep $actrep -gpu $gpu -random_starts $random_starts -pool_frms $pool_frms -seed $seed -threads $num_threads -verbose $verbose -gameOverPenalty $gameOverPenalty" #-network $saved_network"
+args="-framework $FRAMEWORK -game_path $game_path -name $agent_name -env $ENV -env_params $env_params -agent $agent -agent_params $agent_params -steps $steps -eval_freq $eval_freq -eval_steps $eval_steps -prog_freq $prog_freq -save_freq $save_freq -actrep $actrep -gpu $gpu -random_starts $random_starts -pool_frms $pool_frms -seed $seed -threads $num_threads -verbose $verbose -gameOverPenalty $gameOverPenalty -save_versions $save_versions" #-network $saved_network"
 
 # Copy stdout and stderr to a logfile.
 LOGFILE="logs/dqn_log_`/bin/date +\"%F:%R\"`"
