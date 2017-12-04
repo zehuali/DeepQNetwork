@@ -124,6 +124,7 @@ function setup(_opt)
     _opt.agent_params.best      = _opt.best
     if _opt.network ~= '' then
         _opt.agent_params.network = _opt.network
+        print('using trained network!!!!!!!!!!!!!!!!!!!!!!!!')
     end
     _opt.agent_params.verbose = _opt.verbose
     if not _opt.agent_params.state_dim then

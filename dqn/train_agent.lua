@@ -53,11 +53,18 @@ local opt = cmd:parse(arg)
 local game_env, game_actions, agent, opt = setup(opt)
 
 -- override print to always flush the output
-local old_print = print
-local print = function(...)
-    old_print(...)
-    io.flush()
-end
+-- local old_print = print
+-- local print = function(...)
+--     old_print(...)
+--     io.flush()
+-- end
+
+-- print('-----------')
+-- print(game_actions)
+-- for index, data in ipairs(game_actions) do
+--     print(index..data)
+-- end
+-- print('-----------')
 
 local learn_start = agent.learn_start
 local start_time = sys.clock()

@@ -429,8 +429,12 @@ function nql:eGreedy(state, testing_ep)
     -- Select an action, maybe randomly.
     if torch.uniform() < self.ep then
     
+        actions = {1, 2,2, 3, 4, 5,5,5,5,6,7,8,9,9,9,9,9,10,11,12,13,14,15}
         -- Select a random action, with probability ep.
-        return torch.random(1, self.n_actions)
+        -- return torch.random(1, self.n_actions)
+        ran = torch.random(1, #actions)
+        return actions[ran]
+        -- return 2
     else
     
         -- Select the action with the highest Q value.
