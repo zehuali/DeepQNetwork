@@ -45,4 +45,5 @@ args="-framework $FRAMEWORK -game_path $game_path -name $agent_name -env $ENV -e
 echo $args
 
 cd dqn
-../torch/bin/qlua test_agent.lua $args
+# ../torch/bin/qlua test_agent.lua $args
+../torch/bin/qlua test_sl.lua $args

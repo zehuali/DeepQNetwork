@@ -18,34 +18,6 @@ require 'nn';
 require 'paths';
 require 'cunn';
 
-trainset = torch.load('train_set-1.t7')
--- testset = torch.load('cifar10-test.t7')
-
-setmetatable(trainset, 
-{__index = function(t, i) 
-                return {t.data[i], t.label[i]} 
-            end}
-);
-trainset.data = trainset.data:double() -- convert the data from a ByteTensor to a DoubleTensor.
-
-function trainset:size() 
-return self.data:size(1) 
-end
-
-redChannel = trainset.data[{ {}, {1}, {}, {}  }] -- this picks {all images, 1st channel, all vertical pixels, all horizontal pixels}
-print(#redChannel)
-
-mean = {} -- store the mean, to normalize the test set in the future
-stdv  = {} -- store the standard-deviation for the future
-for i=1,3 do -- over each image channel
-    mean[i] = trainset.data[{ {}, {i}, {}, {}  }]:mean() -- mean estimation
-    print('Channel ' .. i .. ', Mean: ' .. mean[i])
-    trainset.data[{ {}, {i}, {}, {}  }]:add(-mean[i]) -- mean subtraction
-    
-    stdv[i] = trainset.data[{ {}, {i}, {}, {}  }]:std() -- std estimation
-    print('Channel ' .. i .. ', Standard Deviation: ' .. stdv[i])
-    trainset.data[{ {}, {i}, {}, {}  }]:div(stdv[i]) -- std scaling
-end
 
 
 net = nn.Sequential()
@@ -67,16 +39,92 @@ criterion = nn.ClassNLLCriterion()
 
 net = net:cuda()
 criterion = criterion:cuda()
-trainset.data = trainset.data:cuda()
-trainset.label = trainset.label:cuda()
 
 trainer = nn.StochasticGradient(net, criterion)
 trainer.learningRate = 0.001
-trainer.maxIteration = 50 -- just do 5 epochs of training.
+trainer.maxIteration = 200 -- just do 5 epochs of training.
 
-    
-start = os.time(os.date("!*t"))
-trainer:train(trainset)
-print("time cost", os.time(os.date("!*t")) - start)
 
-torch.save('slnn-1.t7', {model = net})
+-- start loop the training set
+
+
+require "image";
+
+labelfile = 'train_data/1/labels.lua'
+train_set_file_name = "train_set-1.t7"
+size = 500
+
+lines = {}
+for line in io.lines(labelfile) do 
+    lines[#lines + 1] = tonumber(line)
+end
+
+print(lines)
+-- size = #lines
+total_size = #lines
+
+turns = math.floor(total_size / size) - 1
+
+for j = 0, turns do
+
+    imagesAll = torch.Tensor(size + 1,3,224,256)
+    local labelsAll = torch.Tensor(size + 1)
+
+    print(size)
+    print(type(imagesAll))
+
+    for f=0,size do
+        -- print(f)
+        ff = f  + 1 + (j * 500)
+        imagesAll[f+1] = image.load('train_data/1/snaps/mario-'..ff..'.png') 
+        labelsAll[f+1] = lines[ff] -- 2 = background
+    end
+
+
+    -- create train set:
+    trainset = {
+    data = imagesAll,
+    label = labelsAll,
+    size = function() return trsize end
+    }
+
+
+
+    -- trainset = torch.load('train_set-1.t7')
+    -- testset = torch.load('cifar10-test.t7')
+
+    setmetatable(trainset, 
+    {__index = function(t, i) 
+                    return {t.data[i], t.label[i]} 
+                end}
+    );
+    trainset.data = trainset.data:double() -- convert the data from a ByteTensor to a DoubleTensor.
+
+    function trainset:size() 
+    return self.data:size(1) 
+    end
+
+    redChannel = trainset.data[{ {}, {1}, {}, {}  }] -- this picks {all images, 1st channel, all vertical pixels, all horizontal pixels}
+    print(#redChannel)
+
+    mean = {} -- store the mean, to normalize the test set in the future
+    stdv  = {} -- store the standard-deviation for the future
+    for i=1,3 do -- over each image channel
+        mean[i] = trainset.data[{ {}, {i}, {}, {}  }]:mean() -- mean estimation
+        print('Channel ' .. i .. ', Mean: ' .. mean[i])
+        trainset.data[{ {}, {i}, {}, {}  }]:add(-mean[i]) -- mean subtraction
+        
+        stdv[i] = trainset.data[{ {}, {i}, {}, {}  }]:std() -- std estimation
+        print('Channel ' .. i .. ', Standard Deviation: ' .. stdv[i])
+        trainset.data[{ {}, {i}, {}, {}  }]:div(stdv[i]) -- std scaling
+    end
+
+    trainset.data = trainset.data:cuda()
+    trainset.label = trainset.label:cuda()    
+    start = os.time(os.date("!*t"))
+    trainer:train(trainset)
+    print("time cost", os.time(os.date("!*t")) - start)
+
+    torch.save('slnn-'..j..'.t7', {model = net})
+end
+

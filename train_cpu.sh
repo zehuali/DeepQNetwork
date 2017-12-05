@@ -37,7 +37,7 @@ gameOverPenalty=1 # Gives a negative reward upon dying.
 # LEARNING OPTIONS
 lr=0.00025 # .00025 for Atari.
 learn_start=50000 # Only start learning after this many steps. Should be bigger than bufferSize. Was set to 50k for Atari.
-replay_memory=1000000 # Set small to speed up debugging. 1M is the Atari setting... Big memory object!
+replay_memory=100000 # Set small to speed up debugging. 1M is the Atari setting... Big memory object!
 n_replay=4 # Minibatches to learn from each learning step.
 nonEventProb=nil # Probability of selecting a non-reward-bearing experience.
 clip_delta=1 # Limit the delta to +/- 1.
